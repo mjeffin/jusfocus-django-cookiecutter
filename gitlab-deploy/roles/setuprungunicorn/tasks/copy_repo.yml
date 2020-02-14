@@ -1,0 +1,12 @@
+
+---
+
+
+
+  
+- name: Copy the project code
+  synchronize:
+    src: ../../../
+    dest: "{{ project_path }}"
+  become_user: "{{ gunicorn_user }}" 
+

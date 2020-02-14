@@ -1,0 +1,57 @@
+deploy-master:
+  image: williamyeh/ansible:alpine3
+  stage: deploy
+  script:
+    - apk add --update --no-cache rsync openssh bash 
+    - mkdir -p ~/.ssh
+    - echo "$SSH_PRIVATE_KEY" >> ~/.ssh/id_dsa
+    - chmod 600 ~/.ssh/id_dsa
+    - echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config
+    - echo $CI_REPOSITORY_URL
+    - cd gitlab-deploy
+    - chmod +x add_env_vars_common.sh
+    - chmod +x add_env_vars_master.sh
+    - ./add_env_vars_common.sh
+    - ./add_env_vars_master.sh
+    - ansible-playbook -i $MASTER_DEPLOYMENT_SERVER,  --extra-vars "@env.yml" deployment_playbook.yml
+  only:
+    - master
+
+deploy-feature:
+  image: williamyeh/ansible:alpine3
+  stage: deploy
+  script:
+    - apk add --update --no-cache rsync openssh bash 
+    - mkdir -p ~/.ssh
+    - echo "$SSH_PRIVATE_KEY" >> ~/.ssh/id_dsa
+    - chmod 600 ~/.ssh/id_dsa
+    - echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config
+    - cd gitlab-deploy
+    - chmod +x add_env_vars_common.sh
+    - chmod +x add_env_vars_feature.sh
+    - ./add_env_vars_common.sh
+    - ./add_env_vars_feature.sh
+    - ansible-playbook -i $FEATURE_DEPLOYMENT_SERVER,  --extra-vars "@env.yml" deployment_playbook.yml
+  except:
+    - production
+    - master
+
+
+deploy-production:
+  image: williamyeh/ansible:alpine3
+  stage: deploy
+  script:
+    - apk add --update --no-cache rsync openssh bash 
+    - mkdir -p ~/.ssh
+    - echo "$SSH_PRIVATE_KEY" >> ~/.ssh/id_dsa
+    - chmod 600 ~/.ssh/id_dsa
+    - echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config
+    - echo $CI_REPOSITORY_URL
+    - cd gitlab-deploy
+    - chmod +x add_env_vars_common.sh
+    - chmod +x add_env_vars_production.sh
+    - ./add_env_vars_common.sh
+    - ./add_env_vars_production.sh
+    - ansible-playbook -i $PRODUCTION_DEPLOYMENT_SERVER,  --extra-vars "@env.yml" deployment_playbook.yml
+  only:
+    - production

@@ -1,0 +1,22 @@
+---
+
+
+- name: Deploy application using nginx and gunicorn using Ansible
+  hosts: all
+  become: yes
+  remote_user: ubuntu
+  vars_files:
+    - vars.yml
+  vars:
+    ansible_python_interpreter: python3
+  roles:
+    # - role: redis
+    #   tags: ['onetime']
+    - role: setuprungunicorn
+      tags: ['dev']
+    # - role: celery
+    #   tags: ['celery']
+    - certbot
+    - role: nginx
+      tags: ['nginx']
+

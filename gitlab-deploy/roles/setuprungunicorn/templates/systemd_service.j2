@@ -1,0 +1,11 @@
+
+[Unit]
+Description={{ project_code }}
+
+[Service]
+ExecStart=/bin/sh {{ virtualenv_path }}/bin/gunicorn_start
+Restart=always
+User={{ gunicorn_user }}
+
+[Install]
+WantedBy=multi-user.target

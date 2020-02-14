@@ -1,0 +1,67 @@
+---
+
+
+customer_code: "{{ CUSTOMER_CODE }}"
+project_code:  "{{ PROJECT_CODE }}"
+app_type: api
+deploy_environ: "{{ DEPLOY_ENVIRON }}"
+app_full_name: "{{ customer_code }}_{{ project_code }}_{{ app_type }}_{{ deploy_environ }}"
+application_name: "{{ app_full_name }}"
+admin_email: "{{ ADMIN_EMAIL }}"
+application_sub_type: django
+
+#gunicorn/user settings
+gunicorn_user: webappuser
+gunicorn_group: webappgroup
+
+git_repo:  "{{ GIT_REPO }}"
+git_branch: "{{ GIT_BRANCH }}"
+
+# Application settings.
+run_django_db_migrations: yes
+
+# Django environment variables.
+django_environment:
+  # DJANGO_SECRET_KEY: "{{ DJANGO_SECRET_KEY }}"
+  DJANGO_SETTINGS_MODULE: "{{ DJANGO_SETTINGS_MODULE }}"
+  DATABASE_URL: "{{ DATABASE_URL }}"
+  DJANGO_READ_DOT_ENV_FILE: False
+  DJANGO_ALLOWED_HOSTS: "{{DJANGO_ALLOWED_HOSTS}}"
+  DJANGO_DEBUG: "{{ DJANGO_DEBUG }}"
+  DJANGO_AWS_ACCESS_KEY_ID: "{{ DJANGO_AWS_ACCESS_KEY_ID }}"
+  DJANGO_AWS_SECRET_ACCESS_KEY: "{{ DJANGO_AWS_SECRET_ACCESS_KEY }}"
+  DJANGO_AWS_STORAGE_BUCKET_NAME: "{{ DJANGO_AWS_STORAGE_BUCKET_NAME }}"
+  DJANGO_AWS_STORAGE_BUCKET_NAME_STATIC: "{{ DJANGO_AWS_STORAGE_BUCKET_NAME_STATIC }}"
+  HOST_PORT: 8443
+  DEPLOY_ENVIRON: "{{ DEPLOY_ENVIRON }}"
+  # HUBSPOT_API_KEY: "{{ HUBSPOT_API_KEY }}"
+  # HUBSPOT_DEFAULT_OWNER_ID: "{{ HUBSPOT_DEFAULT_OWNER_ID }}"
+  SENTRY_DSN: "{{ SENTRY_DSN }}"
+
+#wsgi settings
+wsgi_location: config
+wsgi_file_name: wsgi
+
+#virtualenv settings
+virtualenv_python_version: python3.6
+app_root_dir: "/home/{{ gunicorn_user }}"
+virtualenv_path: "/home/webappuser/{{ app_full_name }}"
+remote_ssh_key_folder: "{{ app_root_dir }}/.ssh"
+
+# Application settings.
+project_path: "{{ virtualenv_path }}/{{ app_full_name }}"
+application_log_dir: "{{ virtualenv_path }}/logs"
+application_log_file: "{{ application_log_dir }}/gunicorn_supervisor.log"
+requirements_file: "{{ project_path }}/requirements/production.txt"
+
+
+# nginx settings
+site_name: "{{ inventory_hostname }}"
+nginx_static_dir: "/var/www/{{ project_code }}/static"
+# nginx_media_dir: "{{ project_path }}/{{ project_code }}/media/"
+nginx_server_name: "{{ site_name }}"
+nginx_access_log_file: "{{ application_log_dir }}/nginx_access.log"
+nginx_error_log_file: "{{ application_log_dir }}/nginx_error.log"
+nginx_port: 8443
+nginx_use_letsencrypt: True
+

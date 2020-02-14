@@ -1,0 +1,28 @@
+
+#!/bin/sh
+
+NAME="{{ application_name }}_celery_flower"
+DJANGODIR="{{ project_path }}"
+CELERY_APP="{{ application_name }}.taskapp.celery"
+LOG_LEVEL="info"
+REDIS_URL="{{ REDIS_URL }}"
+FLOWER_PORT="{{ FLOWER_PORT }}"
+FLOWER_PASSWORD="{{ FLOWER_PASSWORD }}"
+FLOWER_USER="{{ FLOWER_USER }}"
+
+echo "Starting $NAME as `whoami`"
+
+# Activate the virtual environment.
+cd $DJANGODIR
+. {{ virtualenv_path }}/bin/activate
+
+# Set additional environment variables.
+. {{ virtualenv_path }}/bin/postactivate
+
+exec {{ virtualenv_path }}/bin/celery flower \
+    --app=$CELERY_APP \
+    --broker=$REDIS_URL \
+    --address=0.0.0.0 \
+    --port=$FLOWER_PORT \
+    --basic_auth=$FLOWER_USER:$FLOWER_PASSWORD
+

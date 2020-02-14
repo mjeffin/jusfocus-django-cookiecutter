@@ -1,0 +1,17 @@
+django==2.2.2
+djangorestframework==3.9.4
+django-environ>=0.4.5
+djoser>=2.0.2
+drf-yasg==1.16.1
+packaging==19.1
+django-cors-headers==3.1.0
+sentry-sdk==0.10.2
+django_extensions==2.2.1
+django-debug-toolbar==2.0
+django-s3-storage==0.12.4
+django-filter==2.2.0
+faker
+factory_boy
+jupyter
+ipykernel
+python-gitlab

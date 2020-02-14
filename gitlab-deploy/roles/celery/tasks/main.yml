@@ -1,0 +1,42 @@
+
+---
+
+
+- name: Create the Celery script file
+  template: src=celery_start.j2
+            dest={{ virtualenv_path }}/bin/celery_start
+            owner={{ gunicorn_user }}
+            group={{ gunicorn_group }}
+            mode=0755
+            backup=yes
+  tags: deploy
+
+- name: Create the Celery flower script file
+  template: src=celery_beat_start.j2
+            dest={{ virtualenv_path }}/bin/celery_beat_start
+            owner={{ gunicorn_user }}
+            group={{ gunicorn_group }}
+            mode=0755
+            backup=yes
+  tags: deploy
+
+- name: Create the Celery beat script file
+  template: src=celery_flower_start.j2
+            dest={{ virtualenv_path }}/bin/celery_flower_start
+            owner={{ gunicorn_user }}
+            group={{ gunicorn_group }}
+            mode=0755
+            backup=yes
+  tags: deploy
+
+
+
+- include: setup_supervisor.yml
+  tags: supervisor
+
+- include: setup_supervisor_beat.yml
+  tags: supervisor
+
+- include: setup_supervisor_flower.yml
+  tags: supervisor
+

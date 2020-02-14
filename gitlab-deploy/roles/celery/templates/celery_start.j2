@@ -1,0 +1,23 @@
+
+#!/bin/sh
+
+NAME="{{ application_name }}_celery"
+DJANGODIR="{{ project_path }}"
+CELERY_APP="{{ application_name }}.taskapp.celery"
+LOG_LEVEL="info"
+
+echo "Starting $NAME as `whoami`"
+
+# Activate the virtual environment.
+cd $DJANGODIR
+. {{ virtualenv_path }}/bin/activate
+
+# Set additional environment variables.
+. {{ virtualenv_path }}/bin/postactivate
+
+exec {{ virtualenv_path }}/bin/celery worker \
+    -A $CELERY_APP \
+    --pool=gevent \
+    --concurrency={{ celery_concurrency }} \
+    --loglevel=$LOG_LEVEL
+

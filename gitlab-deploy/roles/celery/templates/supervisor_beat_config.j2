@@ -1,0 +1,5 @@
+
+[program:{{ application_name }}_celery_beat]
+command = {{ virtualenv_path }}/bin/celery_beat_start
+user = {{ gunicorn_user }}
+

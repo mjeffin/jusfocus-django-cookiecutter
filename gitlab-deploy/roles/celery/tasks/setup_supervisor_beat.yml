@@ -1,0 +1,51 @@
+
+---
+
+# - name: Create the application log folder
+#   file: path={{ application_log_dir }}
+#         owner={{ gunicorn_user }}
+#         group={{ gunicorn_group }}
+#         mode=0774
+#         state=directory
+
+# - name: Create (or retain) the application log file
+#   copy: content=""
+#         dest={{ application_log_file }}
+#         owner={{ gunicorn_user }}
+#         group={{ gunicorn_group }}
+#         mode=0664
+#         force=no
+
+# - name: Add serve alias for foo user
+#   lineinfile:
+#     dest=/home/ubuntu/.bashrc
+#     line="alias djlogs='sudo tail -200 {{ application_log_file }}'"
+#     owner=foo
+#     regexp="^alias djlogs='sudo tail -200 {{ application_log_file }}'$""
+#     state=present
+#     insertafter=EOF
+#     create=True
+
+- name: Ensure the Supervisor service is installed
+  apt: 
+    name: supervisor
+    state: present
+    
+- name: Ensure the Supervisor service is running
+  service: name=supervisor state=started enabled=yes
+
+- name: Create the Supervisor config file for celery beat
+  template: src=supervisor_beat_config.j2
+            dest=/etc/supervisor/conf.d/{{ application_name }}_celery_beat.conf
+            backup=yes
+
+- name: Re-read the Supervisor config files for celery beat
+  supervisorctl: name={{ application_name }}_celery_beat state=present
+
+- name: Stop the current supervisorctl daemon for celery beat
+  supervisorctl: name={{ application_name }}_celery_beat state=stopped
+
+- name: Start the current supervisorctl daemon for celery beat
+  supervisorctl: name={{ application_name }}_celery_beat state=started
+
+
